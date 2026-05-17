@@ -145,6 +145,7 @@
       if (settings.adaptiveTheme) triggerAdaptiveTheme();
     }
     if (state.frustrationScore < 30) state.frustrationTriggered = false;
+    themeShown = false;
   }
 
   function updateFrustrationBadge() {
@@ -154,16 +155,24 @@
   // ════════════════════════════════════════════════════════════
   // 9. ADAPTIVE THEME (Trigger-Based)
   // ════════════════════════════════════════════════════════════
+  let themeShown = false;
+
   function triggerAdaptiveTheme() {
-    showToast('😤 Frustration detected — activating Focus Mode for you!');
+    if (themeShown) return;
+
+    themeShown = true;
+
+    showToast('😤 Frustration detected — activating Calm Mode for you!');
+
     if (!state.featureStates.focusMode) enableFocusMode();
     if (!state.featureStates.readingFocus) enableReadingFocus();
     if (!state.featureStates.distractionFreeze) enableDistractionFreeze();
 
-    // Notify popup to update toggles
+    // 🔥 YOUR FEATURE
+    showThemeSelector();
+
     chrome.runtime.sendMessage({ type: 'ADAPTIVE_TRIGGERED' });
   }
-
   // ════════════════════════════════════════════════════════════
   // 2. PROGRESSIVE CONTENT REVEAL
   // ════════════════════════════════════════════════════════════

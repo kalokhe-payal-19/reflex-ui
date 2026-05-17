@@ -86,7 +86,7 @@ function pollScore() {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     if (!tabs[0]) return;
     chrome.tabs.sendMessage(tabs[0].id, { type: 'GET_FRUSTRATION_SCORE' }, () => {
-      if (chrome.runtime.lastError) {} // tab might not have content script
+      if (chrome.runtime.lastError) { } // tab might not have content script
     });
   });
 }
@@ -141,3 +141,6 @@ document.getElementById('btnReset').addEventListener('click', () => {
     chrome.tabs.sendMessage(tabs[0].id, { type: 'RESET_FRUSTRATION' });
   });
 });
+if (frustrationScore > 40) {
+  showThemeSelector();
+}
