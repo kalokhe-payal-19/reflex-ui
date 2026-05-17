@@ -529,4 +529,54 @@
   // ── Bootstrap ────────────────────────────────────────────────
   setupFrustrationDetection();
 
+  // ── PERSISTENT PROGRESS DASHBOARD (Injected HTML) ─────────────
+function injectFlowDashboard() {
+  if (document.getElementById('ff-dashboard')) return;
+
+  const dashboard = document.createElement('div');
+  dashboard.id = 'ff-dashboard';
+  
+  // This is the HTML that will appear on the website
+  dashboard.innerHTML = `
+    <div class="ff-dash-item">
+      <span class="ff-dash-icon">⏱</span> 
+      <span id="ff-time-left">--</span> min left
+    </div>
+    <div class="ff-dash-progress-container">
+      <div id="ff-progress-bar"></div>
+    </div>
+  `;
+  document.body.appendChild(dashboard);
+  
+  // Count words to estimate reading time
+  const text = document.body.innerText || "";
+  state.totalWords = text.split(/\s+/).length;
+
+  // Update immediately and on scroll
+  updateDashboard();
+  window.addEventListener('scroll', updateDashboard, { passive: true });
+}
+
+function updateDashboard() {
+  const bar = document.getElementById('ff-progress-bar');
+  const timeEl = document.getElementById('ff-time-left');
+  if (!bar || !timeEl) return;
+
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const scrollP = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+  
+  const safeScroll = Math.min(100, Math.max(0, scrollP));
+  bar.style.width = `${safeScroll}%`;
+
+  // Time calculation (Remaining words / 200 words per minute)
+  const wordsRemaining = state.totalWords * (1 - (safeScroll / 100));
+  const timeLeft = Math.ceil(wordsRemaining / 200);
+  
+  timeEl.innerText = timeLeft > 0 ? timeLeft : 0;
+}
+
+// MAKE SURE TO CALL THIS AT THE BOTTOM OF YOUR CONTENT.JS
+injectFlowDashboard();
+
 })();
